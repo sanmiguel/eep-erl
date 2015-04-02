@@ -32,33 +32,13 @@
 
 %% clock behaviour.
 -export([name/0]).
--export([at/1]).
 -export([new/1]).
 -export([inc/1]).
--export([tick/1]).
--export([tock/2]).
 
 name() -> count.
 
-at(State) -> 
- State#eep_clock.at.
-
 new(Interval) ->
-  #eep_clock{at = 0, interval = Interval}.
+  #eep_clock{origin = 0, at = 0, mark = 0, interval = Interval}.
 
 inc(State) -> 
   State#eep_clock{at = State#eep_clock.at + 1}.
-
-tick(State) ->
-  NewState = case State#eep_clock.mark of
-    undefined -> State#eep_clock{mark = State#eep_clock.at};
-    _Other -> State
-  end,
-  {(NewState#eep_clock.at - NewState#eep_clock.mark) >= NewState#eep_clock.interval, NewState}.
-
-tock(State, _Elapsed) ->
-  Delta = State#eep_clock.at,
-  case Delta >= State#eep_clock.interval of
-    true -> {true, State#eep_clock{mark = State#eep_clock.mark + State#eep_clock.interval}};
-    false -> {false, State}
-  end.
